@@ -1,5 +1,5 @@
 # USAGE
-# python faster_facial_landmarks.py --shape-predictor shape_predictor_68_face_landmarks.dat
+# python face_detection_using_shapepredictors.py --shape-predictor shape_predictor_68_face_landmarks.dat
 
 # import the necessary packages
 from imutils.video import VideoStream
