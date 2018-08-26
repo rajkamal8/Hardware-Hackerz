@@ -1,11 +1,13 @@
 # USAGE
-# python face_detection_using_shapepredictors.py --shape-predictor shape_predictor_68_face_landmarks.dat
+# python faster_facial_landmarks.py --shape-predictor shape_predictor_68_face_landmarks.dat
 
 # import the necessary packages
 from imutils.video import VideoStream
 from imutils import face_utils
 import argparse
 import imutils
+import datetime as dt
+import logging as log
 import time
 import dlib
 import cv2
@@ -24,8 +26,10 @@ predictor = dlib.shape_predictor(args["shape_predictor"])
 
 # initialize the video stream and sleep for a bit, allowing the
 # camera sensor to warm up
+log.basicConfig(filename='webcam.log',level=log.INFO)
 print("[INFO] camera sensor warming up...")
 vs = cv2.VideoCapture(0)
+anterior = 0
 # vs = VideoStream(usePiCamera=True).start() # Raspberry Pi
 time.sleep(2.0)
 
@@ -43,7 +47,7 @@ while True:
 
 	# check to see if a face was detected, and if so, draw the total
 	# number of faces on the frame
-	if len(rects) > 0:
+	if len(rects) >= 0:
 		text = "{} face(s) found".format(len(rects))
 		cv2.putText(frame, text, (10, 20), cv2.FONT_HERSHEY_SIMPLEX,
 			0.5, (0, 0, 255), 2)
@@ -54,7 +58,9 @@ while True:
 		# frame
 		(bX, bY, bW, bH) = face_utils.rect_to_bb(rect)
 		cv2.rectangle(frame, (bX, bY), (bX + bW, bY + bH),
-			(0, 255, 0), 1)
+			(255, 0, 0), 1)
+	
+
 
 		# determine the facial landmarks for the face region, then
 		# convert the facial landmark (x, y)-coordinates to a NumPy
@@ -67,8 +73,11 @@ while True:
 		for (i, (x, y)) in enumerate(shape):
 			cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
 			cv2.putText(frame, str(i + 1), (x - 10, y - 10),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
-
+				cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 255, 0), 1)
+	if anterior != len(rects) or anterior == len(rects):
+      	   	 #anterior = len(rects)
+           	 log.info("faces: "+str(len(rects))+" at "+str(dt.datetime.now()))
+		
 	# show the frame
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
