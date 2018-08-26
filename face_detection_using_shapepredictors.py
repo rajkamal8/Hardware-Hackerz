@@ -11,6 +11,11 @@ import logging as log
 import time
 import dlib
 import cv2
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -85,6 +90,37 @@ while True:
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
 		break
+fromaddr = "kongunadueceb@gmail.com"
+toaddr = ['sathishrtr98@gmail.com'] 
+msg = MIMEMultipart()
+ 
+msg['From'] = fromaddr
+msg['To'] = ", ".join(toaddr)
+msg['Subject'] = "Webcam log"
+msg['cc']="hello messages"
+ 
+body = "this is the message and the attachment through the python code"
+ 
+msg.attach(MIMEText(body, 'plain'))
+ 
+filename = "webcam.log"
+attachment = open("/home/sabarish/Desktop/facial-landmarks/webcam.log", "rb")
+ 
+part = MIMEBase('application', 'octet-stream')
+part.set_payload((attachment).read())
+encoders.encode_base64(part)
+part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+ 
+msg.attach(part)
+ 
+server = smtplib.SMTP('smtp.gmail.com', 587)
+server.starttls()
+server.login(fromaddr, "kongunadu")
+text = msg.as_string()
+server.sendmail(fromaddr, toaddr, text)
+server.quit()
+print ("successfully sent email to")
 
 # do a bit of cleanup
 cv2.destroyAllWindows()
+
